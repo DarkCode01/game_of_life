@@ -2,54 +2,61 @@
 import random
 import time
 import os
+from termcolor import colored
 
 
 class GameOfLife(object):
-    pass
+
+    def __init__(self, rows, columns):
+        self.rows = rows
+        self.columns = columns
+        self.table = self.crate_table()
+
+    def crate_table(self):
+        tmp = [[] for _ in range(self.rows)]
+
+        for i in range(len(tmp)):
+            tmp[i] = [random.randint(0, 1) for _ in range(self.columns)]
+
+        return tmp
+
+    def print_table(self):
+        for i in range(len(self.table)):
+            tmp = map(
+                lambda _: colored("#", "green") if _ else colored(".", "red"),
+                self.table[i])
+
+            print("|".join(tmp))
+
+    def check_neighbors(self, _neighbors=0, **pos):
+        for rv in range(-1, 2):
+            if pos["row"] + rv >= 0:
+                for cv in range(-1, 2):
+                    if pos["col"] + cv >= 0:
+                        try:
+                            if self.table[pos["row"] + rv][pos["col"] + cv]:
+                                _neighbors += 1
+                        except IndexError:
+                            pass
+
+        if self.table[pos["row"]][pos["col"]]:
+            _neighbors -= 1
+
+        if _neighbors < 2 or _neighbors >= 4:
+            self.table[pos["row"]][pos["col"]] = 0
+        elif _neighbors == 3:
+            self.table[pos["row"]][pos["col"]] = 1
+
+    def game(self):
+        while True:
+            for index_row, _row in enumerate(self.table):
+                for index_col, _col in enumerate(_row):
+                    self.check_neighbors(row=index_row, col=index_col)
+
+            os.system("clear")
+            self.print_table()
+            time.sleep(3)
 
 
-def crate_table(f, c):
-    table = [[] for _ in range(f)]
-    for x in range(f):
-        table[x] = [random.randint(0, 1) for _ in range(c)]
-
-    return table
-
-
-def print_table(table_, c):
-    for x in range(len(table_)):
-        tmp = [str(e) for e in table_[x]]
-        print("|".join(tmp).replace("1", "#").replace("0", "."))
-
-
-def game(f, c):
-    t = crate_table(f, c)
-    print_table(t, c)
-    print("-------------")
-    while True:
-        for i, e in enumerate(t):
-            for ii, ee in enumerate(e):
-                v = 0
-                for x in range(-1, 2):
-                    if (i + x) != -1 and (i + x) < f:
-                        for xx in range(-1, 2):
-                            if (ii + xx) != -1 and (ii + x) < c:
-                                try:
-                                    if t[i + x][ii + xx]:
-                                        v += 1
-                                except IndexError as e:
-                                    pass
-                if ee:
-                    v -= 1
-                if v < 2 or v >= 4:
-                    t[i][ii] = 0
-                elif v == 3:
-                    t[i][ii] = 1
-
-        os.system("clear")
-        print_table(t, c)
-        print("-------------")
-        time.sleep(1)
-
-
-game(10, 10)
+gol = GameOfLife(5, 5)
+gol.game()
