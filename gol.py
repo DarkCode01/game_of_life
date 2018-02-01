@@ -4,6 +4,10 @@ import time
 import os
 
 
+class GameOfLife(object):
+    pass
+
+
 def crate_table(f, c):
     table = [[] for _ in range(f)]
     for x in range(f):
