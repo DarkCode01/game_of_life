@@ -25,7 +25,7 @@ class GameOfLife(object):
     def print_table(self):
         for i in range(len(self.table)):
             tmp = map(
-                lambda _: colored("#", "green") if _ else colored(".", "red"),
+                lambda _: colored("#", "green") if _ else colored("·", "red"),
                 self.table[i])
 
             print("|".join(tmp))
